@@ -3,10 +3,7 @@ MAINTAINER Adam Dodman <adam.dodman@gmx.com>
 
 ENV UID=439 UNAME=sickrage GID=990 GNAME=media
 
-ADD start.sh /start.sh
-
-RUN chmod +x /start.sh \
- && addgroup -g $GID $GNAME \
+RUN addgroup -g $GID $GNAME \
  && adduser -SH -u $UID -G $GNAME -s /usr/sbin/nologin $UNAME \
  && apk add --no-cache ca-certificates \
         py-pip ca-certificates git python py-libxml2 py-lxml \
@@ -21,4 +18,4 @@ RUN git clone --depth 1 https://github.com/SickRage/SickRage.git /sickrage
 
 VOLUME ["/config", "/media"]
 EXPOSE 8081
-CMD ["/start.sh"]
+CMD [ "/usr/bin/python", "/sickrage/SickBeard.py", "--datadir=/config/sickrage", "--config=/config/sickrage/config.ini" ]
