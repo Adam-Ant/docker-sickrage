@@ -1,7 +1,7 @@
-FROM alpine:3.4
+FROM alpine:3.5
 MAINTAINER Adam Dodman <adam.dodman@gmx.com>
 
-ENV UID=439 UNAME=sickrage GID=990 GNAME=media
+ENV UID=906 UNAME=sickrage GID=900 GNAME=media
 
 RUN addgroup -g $GID $GNAME \
  && adduser -SH -u $UID -G $GNAME -s /usr/sbin/nologin $UNAME \
