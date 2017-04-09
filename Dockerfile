@@ -18,4 +18,4 @@ RUN git clone --depth 1 https://github.com/SickRage/SickRage.git /sickrage
 
 VOLUME ["/config", "/media"]
 EXPOSE 8081
-CMD [ "/usr/bin/python", "/sickrage/SickBeard.py", "--datadir=/config/sickrage", "--config=/config/sickrage/config.ini" ]
+CMD [ "/usr/bin/python", "/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
