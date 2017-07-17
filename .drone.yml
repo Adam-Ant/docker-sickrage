@@ -20,8 +20,8 @@ pipeline:
       - docker run --name=DEV -d -p 8081:8081 --user=root devbuild # Need root for config
       - sleep 15  # Wait for SickRage to start!
       - docker logs DEV
-      - curl -sSL docker:32400/identity > /dev/null | tee /dev/stderr
-      - docker kill DEV #Not really needed, but keeps things quick
+      - curl -sSL docker:8081  > /dev/null 
+      - docker kill DEV # Not really needed, but keeps things quick
 
   publish:
     image: docker
@@ -30,7 +30,7 @@ pipeline:
        - DOCKER_HOST=tcp://docker:2375
     commands:
        - apk add --no-cache openssl
-         #Grab just the version, not the hash. Used for tagging
+         # Grab just the version, not the hash. Used for tagging
        - echo $DOCKER_USER
        - docker tag devbuild adamant/sickrage:latest
        - docker login -u $DOCKER_USER -p $DOCKER_PASS
