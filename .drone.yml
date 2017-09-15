@@ -4,7 +4,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-       - docker build -t sickrage-dev . 
+       - docker build --pull --no-cache -t sickrage-dev . 
 
   test:
     image: docker
