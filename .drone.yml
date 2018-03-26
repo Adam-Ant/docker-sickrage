@@ -1,18 +1,27 @@
 pipeline:
-  build:
+  identify:
     image: docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     commands:
-       - docker build --pull --no-cache -t sickrage-dev .
+      - apk add --no-cache curl jq
+      - set -o pipefail
+      - curl -fL https://api.github.com/repos/Sickrage/Sickrage/tags
+          | jq '.[0]'
+          | tee /dev/stderr
+          | jq -r .name > .sickrage_tag
+
+  build:
+    image: spritsail/docker-build
+    volumes: [ '/var/run/docker.sock:/var/run/docker.sock' ]
+    repo: sickrage-dev
+    build_args:
+      - 'SICKRAGE_VER=%file: .sickrage_tag'
 
   test:
     image: docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    volumes: [ '/var/run/docker.sock:/var/run/docker.sock' ]
     commands:
       - apk add --no-cache curl
-      - CON_NAME=$(docker run -d --user=root sickrage-dev)
+      - CON_NAME=$(docker run -d -e SUID=0 sickrage-dev)
       - timeout -t 12 -- docker logs -f $$CON_NAME | cat &
       - sleep 10
       - IP=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $$CON_NAME)
@@ -27,18 +36,20 @@ pipeline:
       - docker rm $$CON_NAME
 
   publish:
-    image: docker
-    when:
-      event: [push, tag, deployment]
-    secrets: [ DOCKER_USER, DOCKER_PASS ]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-       - apk add --no-cache openssl
-         # Grab just the version, not the hash. Used for tagging
-       - echo $DOCKER_USER
-       - docker tag sickrage-dev adamant/sickrage:latest
-       - docker login -u $DOCKER_USER -p $DOCKER_PASS
-       - docker push adamant/sickrage
-       - docker rmi sickrage-dev adamant/sickrage
-       - echo "CONGRATS! SUCCESSFULLY BUILT SICKRAGE!"
+    image: spritsail/docker-publish
+    when: { branch: [ master ], event: [ push, tag, deployment ] }
+    volumes: [ '/var/run/docker.sock:/var/run/docker.sock' ]
+    secrets: [ docker_username, docker_password, microbadger_token ]
+    from: sickrage-dev
+    repo: spritsail/sickrage
+    tags:
+      - 'latest'
+      - '%fileauto: .sickrage_tag'
+
+  notify:
+    image: appleboy/drone-telegram
+    when: { status: [ success, failure ] }
+    secrets: [ telegram_token, telegram_to ]
+    message: |
+      *{{repo.owner}}/{{repo.name}} [{{commit.branch}}]*: Build #{{build.number}}: *{{uppercase build.status}}*
+      {{build.link}}
