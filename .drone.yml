@@ -1,6 +1,6 @@
 pipeline:
   identify:
-    image: docker
+    image: alpine
     commands:
       - apk add --no-cache curl jq
       - set -o pipefail
@@ -47,9 +47,6 @@ pipeline:
       - '%fileauto: .sickrage_tag'
 
   notify:
-    image: appleboy/drone-telegram
+    image: spritsail/notify
     when: { status: [ success, failure ] }
-    secrets: [ telegram_token, telegram_to ]
-    message: |
-      *{{repo.owner}}/{{repo.name}} [{{commit.branch}}]*: Build #{{build.number}}: *{{uppercase build.status}}*
-      {{build.link}}
+    secrets: [ webhook_url, notify_token ]
