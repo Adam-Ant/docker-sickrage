@@ -1,4 +1,4 @@
-FROM spritsail/alpine:3.7
+FROM spritsail/alpine:3.8
 
 ARG SICKRAGE_VER
 ARG SICKRAGE_DIR=/sickrage
