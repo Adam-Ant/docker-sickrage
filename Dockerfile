@@ -1,8 +1,6 @@
 FROM spritsail/alpine:3.8
 
-ARG SICKRAGE_VER
-ARG SICKRAGE_DIR=/sickrage
-ARG SU_EXEC_VER=v0.3
+ARG SICKRAGE_VER=v2018.06.15-1
 
 LABEL maintainer="Spritsail <sickrage@spritsail.io>" \
       org.label-schema.vendor="Spritsail" \
@@ -10,26 +8,22 @@ LABEL maintainer="Spritsail <sickrage@spritsail.io>" \
       org.label-schema.url="https://sickrage.github.io" \
       org.label-schema.description="Automatic Video Library Manager for TV Shows" \
       org.label-schema.version=${SICKRAGE_VER} \
-      io.spritsail.version.su-exec=${SU_EXEC_VER} \
       io.spritsail.version.sickrage=${SICKRAGE_VER}
 
 ENV SUID=906 SGID=900
 
-WORKDIR ${SICKRAGE_DIR}
+WORKDIR /sickrage
 
 RUN apk add --no-cache \
         python python-dev py-pip py-libxml2 py-lxml \
-        ca-certificates curl make gcc g++ openssl-dev libffi-dev tini unrar \
+        ca-certificates curl make gcc g++ openssl-dev libffi-dev unrar \
  && pip --no-cache-dir install pyopenssl cheetah requirements \
- && curl -fL https://github.com/frebib/su-exec/releases/download/${SU_EXEC_VER}/su-exec-alpine-$(uname -m) > /sbin/su-exec \
- && chmod +x /sbin/su-exec \
-    \
  && curl -fL https://github.com/Sickrage/Sickrage/archive/${SICKRAGE_VER}.tar.gz \
         | tar xz --strip-components=1 \
  && find -name 'tests' -type d | xargs rm -rf \
  && chmod 777 . \
     \
- && apk del --no-cache make curl gcc g++ python-dev py-pip
+ && apk del --no-cache make curl gcc g++ python-dev py-pip openssl-dev libffi-dev
 
 VOLUME ["/config", "/media"]
 EXPOSE 8081

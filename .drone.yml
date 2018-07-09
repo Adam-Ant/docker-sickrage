@@ -1,20 +1,8 @@
 pipeline:
-  identify:
-    image: alpine
-    commands:
-      - apk add --no-cache curl jq
-      - set -o pipefail
-      - curl -fL https://api.github.com/repos/Sickrage/Sickrage/tags
-          | jq '.[0]'
-          | tee /dev/stderr
-          | jq -r .name > .sickrage_tag
-
   build:
     image: spritsail/docker-build
     volumes: [ '/var/run/docker.sock:/var/run/docker.sock' ]
     repo: sickrage-dev
-    build_args:
-      - 'SICKRAGE_VER=%file: .sickrage_tag'
 
   test:
     image: docker
@@ -44,7 +32,7 @@ pipeline:
     repo: spritsail/sickrage
     tags:
       - 'latest'
-      - '%fileauto: .sickrage_tag'
+      - '%labelauto: io.spritsail.version.sickrage'
 
   notify:
     image: spritsail/notify
