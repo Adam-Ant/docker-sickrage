@@ -28,5 +28,4 @@ RUN apk add --no-cache \
 VOLUME ["/config", "/media"]
 EXPOSE 8081
 
-ENTRYPOINT ["/sbin/tini", "--", "/sbin/su-exec", "--env"]
-CMD [ "/usr/bin/python", "/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini" ]
+CMD ["su-exec", "--env", "/usr/bin/python", "/sickrage/SickBeard.py", "--datadir=/config", "--config=/config/config.ini"]
