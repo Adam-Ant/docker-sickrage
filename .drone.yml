@@ -20,7 +20,7 @@ pipeline:
     repo: spritsail/sickrage
     tags:
       - 'latest'
-      - '%labelauto: io.spritsail.version.sickrage'
+      - '%label io.spritsail.version.sickrage | %auto'
 
   notify:
     image: spritsail/notify
