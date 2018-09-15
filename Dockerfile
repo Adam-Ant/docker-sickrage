@@ -1,6 +1,6 @@
 FROM spritsail/alpine:3.8
 
-ARG SICKRAGE_VER=v2018.09.13-3
+ARG SICKRAGE_VER=2018.09.14-2
 
 LABEL maintainer="Spritsail <sickrage@spritsail.io>" \
       org.label-schema.vendor="Spritsail" \
@@ -18,7 +18,7 @@ RUN apk add --no-cache \
         python python-dev py-pip py-libxml2 py-lxml \
         ca-certificates curl make gcc g++ openssl-dev libffi-dev unrar \
  && pip --no-cache-dir install pyopenssl cheetah requirements \
- && curl -fL https://github.com/Sickrage/Sickrage/archive/${SICKRAGE_VER}.tar.gz \
+ && curl -fL https://github.com/Sickrage/Sickrage/archive/v${SICKRAGE_VER}.tar.gz \
         | tar xz --strip-components=1 \
  && find -name 'tests' -type d | xargs rm -rf \
  && chmod 777 . \
