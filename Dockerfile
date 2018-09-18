@@ -1,6 +1,6 @@
 FROM spritsail/alpine:3.8
 
-ARG SICKRAGE_VER=2018.09.14-2
+ARG SICKRAGE_VER=2018.09.17-1
 
 LABEL maintainer="Spritsail <sickrage@spritsail.io>" \
       org.label-schema.vendor="Spritsail" \
